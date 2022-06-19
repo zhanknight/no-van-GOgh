@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -11,32 +12,28 @@ import (
 
 var numLines int
 var words = strings.Fields("~ ~ ~ * ~ ~ * ~ ~ / * / * O ~ ~ ~ ~")
+var wg sync.WaitGroup
 
 func main() {
-
-	// fmt.Println("How many lines should we print?")
-	// fmt.Scanln(&numLines)
-	// don't ask for now, just generate 8 lines of starry night.
 	numLines = 8
 	for i := 0; i < numLines; i++ {
 		// without spawning a go routine, each line takes 100ms
 		// with routines, the whole thing takes 100ms no matter how many lines
 		// because we create a new routine for each line and they
 		// start and finish almost simultaneously. Cool.
+		wg.Add(1)
 		go func() {
 			output := lineGenerator()
 			fmt.Println(output)
+			wg.Done()
 		}()
-		// output := lineGenerator()
-		// fmt.Println(output)
 	}
-	time.Sleep(150 * time.Millisecond)
 	// Print the countryside
-	// need this to wait for routines to finish, using simple sleep for now
-	fmt.Println("/\\   /\\  /\\/\\ __  /\\   __  /\\/\\ __")
-	fmt.Println("||   ||  ||||/  \\ ||  /  \\ ||||/  \\")
+	wg.Wait()
+	fmt.Print("/\\   /\\  /\\/\\ __  /\\   __  /\\/\\ __\n||   ||  ||||/  \\ ||  /  \\ ||||/  \\\n")
 }
 
+// generate the sky by shuffling the string declared up top
 func lineGenerator() string {
 	shuffledWords := words
 	rand.Shuffle(len(shuffledWords), func(i, j int) {
@@ -49,6 +46,6 @@ func lineGenerator() string {
 }
 
 // TODO
-// make the countryside wait for all routines to complete before printing itself
 // make all routines add their line to a var/struct/something then print that whole thing
 // find a color package, import, use
+// make the countryside shuffle too
