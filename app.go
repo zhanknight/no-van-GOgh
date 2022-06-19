@@ -15,7 +15,7 @@ var numLines int
 var wg sync.WaitGroup
 
 func main() {
-	numLines = 8000
+	numLines = 8
 	for i := 0; i < numLines; i++ {
 		// without spawning a go routine, each line takes 100ms
 		// with routines, the whole thing takes 100ms no matter how many lines
