@@ -9,13 +9,13 @@ import (
 )
 
 // This is a starry night ascii generator.
+const words string = "~ ~ ~ * ~ ~ * ~ ~ / * / * O ~ ~ ~ ~"
 
 var numLines int
-var words = strings.Fields("~ ~ ~ * ~ ~ * ~ ~ / * / * O ~ ~ ~ ~")
 var wg sync.WaitGroup
 
 func main() {
-	numLines = 8
+	numLines = 8000
 	for i := 0; i < numLines; i++ {
 		// without spawning a go routine, each line takes 100ms
 		// with routines, the whole thing takes 100ms no matter how many lines
@@ -35,7 +35,7 @@ func main() {
 
 // generate the sky by shuffling the string declared up top
 func lineGenerator() string {
-	shuffledWords := words
+	shuffledWords := strings.Fields(words)
 	rand.Shuffle(len(shuffledWords), func(i, j int) {
 		shuffledWords[i], shuffledWords[j] = shuffledWords[j], shuffledWords[i]
 	})
