@@ -10,27 +10,28 @@ import (
 
 // This is a starry night ascii generator.
 const words string = "~ ~ ~ * ~ ~ * ~ ~ / * / * O ~ ~ ~ ~"
-
-var numLines int
-var wg sync.WaitGroup
+const numLines int = 8
 
 func main() {
-	numLines = 8
+	var wg sync.WaitGroup
+	var mutex sync.Mutex
+	var finalString string
+	var stringPieces []string
 	for i := 0; i < numLines; i++ {
-		// without spawning a go routine, each line takes 100ms
-		// with routines, the whole thing takes 100ms no matter how many lines
-		// because we create a new routine for each line and they
-		// start and finish almost simultaneously. Cool.
 		wg.Add(1)
 		go func() {
 			output := lineGenerator()
-			fmt.Println(output)
+			mutex.Lock()
+			stringPieces = append(stringPieces, output)
+			mutex.Unlock()
 			wg.Done()
 		}()
 	}
 	// Print the countryside
 	wg.Wait()
-	fmt.Print("/\\   /\\  /\\/\\ __  /\\   __  /\\/\\ __\n||   ||  ||||/  \\ ||  /  \\ ||||/  \\\n")
+	finalString = strings.Join(stringPieces, "\n")
+	fmt.Print(finalString)
+	fmt.Print("\n/\\   /\\  /\\/\\ __  /\\   __  /\\/\\ __\n||   ||  ||||/  \\ ||  /  \\ ||||/  \\\n")
 }
 
 // generate the sky by shuffling the string declared up top
@@ -46,6 +47,5 @@ func lineGenerator() string {
 }
 
 // TODO
-// make all routines add their line to a var/struct/something then print that whole thing
 // find a color package, import, use
 // make the countryside shuffle too
